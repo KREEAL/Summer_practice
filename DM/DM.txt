@@ -1,0 +1,89 @@
+//Дан произвольный неориентированный граф. Проверить, будет ли он деревом
+#define VERTEXES 20
+#include <iostream>
+using namespace std;
+
+int color[VERTEXES];
+
+
+void dfs(int vert,int a[VERTEXES][VERTEXES],int n,bool & b)
+{
+	color[vert] = 1;
+	cout << vert+1<<" ";
+	for(int i =0;i<n;i++)
+	{
+		//Обнаружение цикла
+		//Условие i>vert справедливо из-за выбранной нумерации и проверки вершин в порядке возрастания
+		if (a[vert][i] == 1 && vert != i && color[i] == 1&& i>vert) {
+			b = true;
+		}
+		if(a[vert][i]==1&&color[i]==0)
+		{
+			dfs(i, a, n,b);
+		}
+	}
+
+}
+
+void print(int a[VERTEXES][VERTEXES],int n)
+{
+	for(int i =0;i<n;i++)
+	{
+		for(int j=0;j<n;j++)
+		{
+			cout << a[i][j];
+		}
+		cout << endl;
+	}
+}
+
+int main()
+{	
+	setlocale(LC_ALL, "RU");
+
+	//Объявление переменных
+	int n; int x = -1; int a[VERTEXES][VERTEXES]; bool tree = false;
+
+	//Обнуление матрицы смежности вершин
+	for (int i = 0; i < VERTEXES; i++)
+	{
+		for (int j = 0; j < VERTEXES; j++)
+		{
+			a[i][j] = 0;
+		}
+		
+	}
+
+	//Обнуление массива цветов
+	for (int i = 0; i < VERTEXES; i++)
+		color[i] = 0;
+
+
+	cout << "Введите кол-во вершин: ";
+	cin >> n;
+
+	//Ввод графа и заполнение матрицы смежности
+	for(int i=1;i<=n;i++)
+	{
+		cout << "Введите вершины, смежные с вершиной " << i<<" : ";
+		cin >> x;
+		while(x!=0)
+		{
+			a[i-1][x-1] = 1;
+			a[x - 1][i - 1] = 1;
+			cin >> x;
+		}
+	}
+
+	
+	dfs(0,a, n,tree);
+
+	cout << endl << "Дерево ли?" << endl;
+	if (tree == 1)
+		cout << "Заданный граф - дерево";
+	else cout << "Заданный граф не является деревом";
+
+	//print(a, n);
+	system("pause");
+}
+
