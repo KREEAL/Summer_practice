@@ -23,12 +23,18 @@ begin
   result:= exp(x);
 end;
 
-var x0, y0, x, y, xLeft, yLeft, xRight, yRight, n: integer;
-  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num: real;
+function LogNatural(x:real):real;
+begin
+  result:= log(x);
+end;
+
+var x0, y0, xLeft, yLeft, xRight, yRight, n: integer;
+  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num,aq,fminq,k,q: real;
   i: byte;
   s: string;
+  x,y:longint;
 begin
-  
+  readln(k);
   window.SetSize(W,H);
   setPenWidth(1);
   //Левая верхняя граница
@@ -40,12 +46,18 @@ begin
   yRight:=H-50;
   
   //интервал аб, а и б должны делиться на dx нацело( но почему? )
-  a:=-2; b:=6; dx:=0.5;
-
+  //a:=-2.3; b:=6.1; dx:=0.5;
+  println('Введите a, b и расстояния между "засечками" оси оХ');
+  readln(a,b,dx);
   
-  //fmin fmax - интервалы по игрику, должны делиться на dy( но зачем?) 
+  //fmin fmax - интервалы по игрику, должны делиться на dy( но зачем?)
   fmin:= -10; fmax:= 20; dy:=2;
+  //println('Введите нижний и верхний пороги видимых значений оси оY');
+  //println('И расстояние между "засечками" по оси оY');
+  //readln(fmin,fmax,dy);
   
+  ClearWindow(clwhite);
+
   //Масштаб
   mx:=(xRight-xLeft)/(b-a);
   my:=(yRight-yLeft)/(fmax-fmin);
@@ -61,21 +73,22 @@ begin
   //засечки на иксе
   
   n:=round((b-a)/dx)+1;//сколько засечек
+  aq:=trunc(a);//чтобы не ломался масштаб
   for i:=1 to n do begin
-    num:=a+ (i-1)*dx;
+    num:=aq+ (i-1)*dx;
     x:=xLeft+trunc((num-a)*mx);
     Line(x,y0-3,x,y0+3);
     str(num,s);
     if(num<>0) then
     TextOut(x-3,y0+10,s)
-    else
-      Textout(x-10,y0+10,'0');
+    
   end;  
   
   //Засечки на игрике
   n:=round((fmax-fmin)/dy)+1;
+  fminq:=trunc(fmin);
   for i:=1 to n do begin
-    num:=fmin+(i-1)*dy;
+    num:=fminq+(i-1)*dy;
     y:=yRight-trunc((num-fmin)*my);
     Line(x0-3,y,x0+3,y);
     str(num,s);
@@ -83,6 +96,7 @@ begin
       TextOut(x0+7,y-1,s);
   end; 
    
+  TextOut(x0 - 10, y0 - 10, '0'); //Нулевая точка
   
   //стрелочки на осях
   Line(x0,yLeft-10,x0+7,yLeft+5);
@@ -91,6 +105,9 @@ begin
   Line(xRight+10,y0,xRight-3,y0+7);
   //
   
+  
+  
+ 
   //буквы Х и У
   SetFontSize(12); //Размер шрифта
   SetFontColor(clBlue); //Цвет шрифта
@@ -98,19 +115,27 @@ begin
   TextOut(x0 - 10, yLeft - 30, 'Y'); //Подписываем ось OY
   SetFontSize(8); //Размер шрифта
   SetFontColor(clRed); //Цвет шрифта
+
+  
   
   //Собсна,функция
   
+  
   x1:=a;
+  if(k=5) then x1:=0.001;
   while x1<=b do begin
-    //y1:=Parabola(x1);
-    //y1:=Sinus(x1);
-    //y1:=Linear(x1);
-    y1:=Expanenta(x1);
+    
+    if(k=1) then y1:=Parabola(x1);
+    if(k=2) then y1:=Sinus(x1);
+    if(k=3) then y1:=Linear(x1);
+    if(k=4) then y1:=Expanenta(x1);
+    if(k=5) then y1:=LogNatural(x1);
     x:=x0+round(x1*mx);
     y:=y0-round(y1*my);
     if((y>=yLeft)AND(y<=yRight)) then
       SetPixel(x,y,clGreen);
+    if(y1>=10000) then x1:=(b+1)
+    else
     x1:=x1+0.001;
     
   end;
