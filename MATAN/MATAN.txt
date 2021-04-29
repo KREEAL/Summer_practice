@@ -1,0 +1,119 @@
+uses GraphABC;
+
+const 
+W=800; H=500;
+
+function Parabola(x:real):real;
+begin
+  Result:=x*x;
+end;
+
+function Sinus(x:real):real;
+begin
+  result:= sin(x);
+end;
+
+function Linear(x:real):real;
+begin 
+  result:= x;
+end;
+
+function Expanenta(x:real):real;
+begin
+  result:= exp(x);
+end;
+
+var x0, y0, x, y, xLeft, yLeft, xRight, yRight, n: integer;
+  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num: real;
+  i: byte;
+  s: string;
+begin
+  
+  window.SetSize(W,H);
+  setPenWidth(1);
+  //Левая верхняя граница
+  xLeft:=50;
+  yLeft:=50;
+  
+  //Правая нижняя граница
+  xRight:=W-50;
+  yRight:=H-50;
+  
+  //интервал аб, а и б должны делиться на dx нацело( но почему? )
+  a:=-2; b:=6; dx:=0.5;
+
+  
+  //fmin fmax - интервалы по игрику, должны делиться на dy( но зачем?) 
+  fmin:= -10; fmax:= 20; dy:=2;
+  
+  //Масштаб
+  mx:=(xRight-xLeft)/(b-a);
+  my:=(yRight-yLeft)/(fmax-fmin);
+  
+  //начало координат
+  x0:=(trunc(abs(a)*mx)+xLeft);
+  y0:=yRight-trunc(abs(fmin)*my);
+  
+  //оси
+  Line(xLeft,y0,xRight+10,y0);
+  Line(x0,yLeft-10,x0,yRight);
+  
+  //засечки на иксе
+  
+  n:=round((b-a)/dx)+1;//сколько засечек
+  for i:=1 to n do begin
+    num:=a+ (i-1)*dx;
+    x:=xLeft+trunc((num-a)*mx);
+    Line(x,y0-3,x,y0+3);
+    str(num,s);
+    if(num<>0) then
+    TextOut(x-3,y0+10,s)
+    else
+      Textout(x-10,y0+10,'0');
+  end;  
+  
+  //Засечки на игрике
+  n:=round((fmax-fmin)/dy)+1;
+  for i:=1 to n do begin
+    num:=fmin+(i-1)*dy;
+    y:=yRight-trunc((num-fmin)*my);
+    Line(x0-3,y,x0+3,y);
+    str(num,s);
+    if(num<>0)then
+      TextOut(x0+7,y-1,s);
+  end; 
+   
+  
+  //стрелочки на осях
+  Line(x0,yLeft-10,x0+7,yLeft+5);
+  Line(x0,yLeft-10,x0-7,yLeft+5);
+  Line(xRight+10,y0,xRight-3,y0-7);
+  Line(xRight+10,y0,xRight-3,y0+7);
+  //
+  
+  //буквы Х и У
+  SetFontSize(12); //Размер шрифта
+  SetFontColor(clBlue); //Цвет шрифта
+  TextOut(xRight + 20, y0 - 15, 'X'); //Подписываем ось OX
+  TextOut(x0 - 10, yLeft - 30, 'Y'); //Подписываем ось OY
+  SetFontSize(8); //Размер шрифта
+  SetFontColor(clRed); //Цвет шрифта
+  
+  //Собсна,функция
+  
+  x1:=a;
+  while x1<=b do begin
+    //y1:=Parabola(x1);
+    //y1:=Sinus(x1);
+    //y1:=Linear(x1);
+    y1:=Expanenta(x1);
+    x:=x0+round(x1*mx);
+    y:=y0-round(y1*my);
+    if((y>=yLeft)AND(y<=yRight)) then
+      SetPixel(x,y,clGreen);
+    x1:=x1+0.001;
+    
+  end;
+  
+  
+end.
