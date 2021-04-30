@@ -33,25 +33,69 @@ begin
   result:=cos(x);
 end;
 
-var x0, y0, xLeft, yLeft, xRight, yRight, n,q,ii: integer;
-  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num,aq,fminq,k,lGr,rGr,shag: real;
+function SquareRoot(x:real):real;
+begin
+  if(x>0)then
+  result:=sqrt(x)
+  else result:=0.001;
+end;
+
+function Absolute(x:real):real;
+begin
+  result:=abs(x);
+end;
+
+function Beauty(x:real):real;
+begin
+  result:=10*sin(x)*cos(x);
+end;
+
+function Wtf(x:real):real;
+begin
+  result:=(x-1)*(x-2)*(x-3);
+end;
+
+var x0, y0, xLeft, yLeft, xRight, yRight, n,q,ii,k: integer;
+  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num,aq,fminq,lGr,rGr,shag: real;
   i: byte;
   s: string;
   x,y:longint;
 begin
-  
+    window.CenterOnScreen();
   println('Добро пожаловать в программу!!!');
-  println('Выберите один из предложенных ниже графиков:');
+  println('Выберите одну из предложенных ниже функций:');
   println('1.Парабола (y=x^2)');
-  println('2.Синус(y=sin(x)');
+  println('2.Синус (y=sin(x)');
   println('3.Линейная функция (y=x)');
-  println('4.Экспанентна(y=e^x)');
-  println();
-  println();
-  println();
+  println('4.Экспанентна (y=e^x)');
+  println('5.Натуральный логарифм (y=ln(x))');
+  println('6.Косинус (y=cos(x)');
+  println('7.Квадратный корень (y=sqrt(x))');
+  println('8.Модуль x (y=|x|)');
+  println('9.y=10sin(x)cos(x)');
+  println('10.y=(x-1)*(x-2)*(x-3)');
   readln(k);
+  println('- - - - - - - - - - - - - - - - - - - - - - - - - - - - -');
+  //window.Clear()
+  println('Вы выбрали функцию: ');
+  case k of
+  1:print('1.Парабола (y=x^2)');
+  2:print('2.Синус (y=sin(x)');
+  3:print('3.Линейная функция (y=x)');
+  4:print('4.Экспанентна (y=e^x)');
+  5:print('5.Натуральный логарифм (y=ln(x))');
+  6:print('6.Косинус (y=cos(x)');
+  7:print('7.Квадратный корень (y=sqrt(x))');
+  8:print('8.Модуль x (y=|x|)');
+  9:print('9.y=10sin(x)cos(x)');
+  10:print('10.y=(x-1)*(x-2)*(x-3)');
+  end;
+  writeln();
+  println('Укажите левую и правую границу [a,b](при a>=-5 и b<=10) и шаг h(рекомендуемое значение 0.001)');
+
   
   readln(lGR,rGR,shag);
+  window.Clear(clwhite);
   //lGr:=-3;rGr:=5;
   //shag:=0.001;
   window.SetSize(W,H);
@@ -133,7 +177,7 @@ begin
       TextOut(x0+7,y-1,s);
   end; 
    
-  TextOut(x0 - 10, y0 - 10, '0'); //Нулевая точка
+  TextOut(x0 + 7, y0+7, '0'); //Нулевая точка
   
   //стрелочки на осях
   Line(x0,yLeft-10,x0+7,yLeft+5);
@@ -149,17 +193,32 @@ begin
   SetFontSize(12); //Размер шрифта
   SetFontColor(clBlue); //Цвет шрифта
   TextOut(xRight + 20, y0 - 15, 'X'); //Подписываем ось OX
-  TextOut(x0 - 10, yLeft - 30, 'Y'); //Подписываем ось OY
-  SetFontSize(8); //Размер шрифта
-  SetFontColor(clRed); //Цвет шрифта
+  TextOut(x0 - 10, yLeft - 30, 'Y'); //Подпиsсываем ось OY
+  
 
   
   
+  //обозначение функции
+  
+  SetFontSize(12); //Размер шрифта
+  SetFontColor(clblack); //Цвет шрифта
+  case k of
+  1:TextOut(xLeft+10,yLeft+10,'y=x^2');
+  2:TextOut(xLeft+10,yLeft+10,'y=sin(x)');
+  3:TextOut(xLeft+10,yLeft+10,'y=x');
+  4:TextOut(xLeft+10,yLeft+10,'y=e^x');
+  5:TextOut(xLeft+10,yLeft+10,'y=ln(x)');
+  6:TextOut(xLeft+10,yLeft+10,'y=cos(x)');
+  7:TextOut(xLeft+10,yLeft+10,'y=sqrt(x)');
+  8:TextOut(xLeft+10,yLeft+10,'y=|x|');
+  9:TextOut(xLeft+10,yLeft+10,'y=10sin(x)cos(x)');
+  10:TextOut(xLeft+10,yLeft+10,'y=(x-1)*(x-2)*(x-3)');
+  end;
+  
   //Собсна,функция
-  
-  
-  x1:=a;
+  x1:=lGr;
   if(k=5) then x1:=0.001;
+  if(k=7) then x1:=0.001;
   while x1<=b do begin
     
     if(k=1) then y1:=Parabola(x1);
@@ -168,6 +227,11 @@ begin
     if(k=4) then y1:=Expanenta(x1);
     if(k=5) then y1:=LogNatural(x1);
     if(k=6) then y1:=Cosinus(x1);
+    if(k=7) then y1:=SquareRoot(x1);
+    if(k=8) then y1:=Absolute(x1);
+    if(k=9) then y1:=Beauty(x1);
+    if(k=10)then y1:=wtf(x1);
+    
     x:=x0+round(x1*mx);
     y:=y0-round(y1*my);
     if((y>=yLeft)AND(y<=yRight)AND(x1>=lGR)AND(x1<=rGR)) then
@@ -178,5 +242,5 @@ begin
     
   end;
   
-  
 end.
+
