@@ -28,13 +28,32 @@ begin
   result:= log(x);
 end;
 
-var x0, y0, xLeft, yLeft, xRight, yRight, n: integer;
-  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num,aq,fminq,k,q: real;
+function Cosinus(x:real):real;
+begin
+  result:=cos(x);
+end;
+
+var x0, y0, xLeft, yLeft, xRight, yRight, n,q,ii: integer;
+  a, b, fmin, fmax, x1, y1, mx, my, dx, dy, num,aq,fminq,k,lGr,rGr,shag: real;
   i: byte;
   s: string;
   x,y:longint;
 begin
+  
+  println('Добро пожаловать в программу!!!');
+  println('Выберите один из предложенных ниже графиков:');
+  println('1.Парабола (y=x^2)');
+  println('2.Синус(y=sin(x)');
+  println('3.Линейная функция (y=x)');
+  println('4.Экспанентна(y=e^x)');
+  println();
+  println();
+  println();
   readln(k);
+  
+  readln(lGR,rGR,shag);
+  //lGr:=-3;rGr:=5;
+  //shag:=0.001;
   window.SetSize(W,H);
   setPenWidth(1);
   //Левая верхняя граница
@@ -46,12 +65,12 @@ begin
   yRight:=H-50;
   
   //интервал аб, а и б должны делиться на dx нацело( но почему? )
-  //a:=-2.3; b:=6.1; dx:=0.5;
+  a:=-5; b:=10; dx:=0.5;
   println('Введите a, b и расстояния между "засечками" оси оХ');
-  readln(a,b,dx);
+  //readln(a,b,dx);
   
   //fmin fmax - интервалы по игрику, должны делиться на dy( но зачем?)
-  fmin:= -10; fmax:= 20; dy:=2;
+  fmin:= -5; fmax:= 10; dy:=1;
   //println('Введите нижний и верхний пороги видимых значений оси оY');
   //println('И расстояние между "засечками" по оси оY');
   //readln(fmin,fmax,dy);
@@ -67,8 +86,26 @@ begin
   y0:=yRight-trunc(abs(fmin)*my);
   
   //оси
-  Line(xLeft,y0,xRight+10,y0);
-  Line(x0,yLeft-10,x0,yRight);
+  Line(xLeft,y0,xRight+10,y0);//x
+  Line(x0,yLeft-10,x0,yRight);//y
+  
+  //границы
+  ii:=trunc(my);
+  q:=trunc((lGR+6.06)*mx);
+  while ii<=yRight do begin 
+  SetPixel(q,ii,clred);
+  ii:=ii+3;
+  end;
+  
+  ii:=trunc(my);
+  q:=trunc((rGR+6.06)*mx);
+  while ii<=yRight do begin 
+  SetPixel(q,ii,clred);
+  ii:=ii+3;
+  end;
+  
+  
+  //Line(q,yLeft,q,yRight);
   
   //засечки на иксе
   
@@ -130,13 +167,14 @@ begin
     if(k=3) then y1:=Linear(x1);
     if(k=4) then y1:=Expanenta(x1);
     if(k=5) then y1:=LogNatural(x1);
+    if(k=6) then y1:=Cosinus(x1);
     x:=x0+round(x1*mx);
     y:=y0-round(y1*my);
-    if((y>=yLeft)AND(y<=yRight)) then
+    if((y>=yLeft)AND(y<=yRight)AND(x1>=lGR)AND(x1<=rGR)) then
       SetPixel(x,y,clGreen);
     if(y1>=10000) then x1:=(b+1)
     else
-    x1:=x1+0.001;
+    x1:=x1+shag;
     
   end;
   
