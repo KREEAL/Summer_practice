@@ -78,11 +78,20 @@ int main()
 	
 	dfs(0,a, n,tree);
 
-	cout << endl << "Дерево ли?" << endl;
-	if (tree == 1)
-		cout << "Заданный граф - дерево";
-	else cout << "Заданный граф не является деревом";
+	bool svyaz = true;
 
+	for(int i=0;i<n;i++)
+	{
+		if (color[i] == 0)svyaz = false;
+	}
+
+	cout << endl << "Дерево ли? " << endl;
+	if (tree == 1) {
+		if(svyaz)
+		cout << "Заданный граф - дерево";
+	}
+	else cout << "Заданный граф не является деревом";
+	cout << endl;
 	//print(a, n);
 	system("pause");
 }
