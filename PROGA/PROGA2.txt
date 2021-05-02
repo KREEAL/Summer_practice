@@ -1,0 +1,116 @@
+
+// summer_practice_proga.cpp : Этот файл содержит функцию "main". Здесь начинается и заканчивается выполнение программы.
+//
+
+#include <iostream>
+#include <string>
+#include <regex>
+#include <fstream>
+
+using namespace std;
+ifstream NamesIn; ifstream PhonesIn; ifstream EmailsIn; ifstream GlobalIn;
+ofstream NamesOut; ofstream PhonesOut; ofstream EmailsOut; ofstream GlobalOut;
+void phoneFormat(string& s)
+{
+	//+7-(222)-222-22-22
+	s = "+7-(" + s;
+	s.insert(7, ")-");
+	s.insert(12, "-");
+	s.insert(15, "-");
+}
+
+int main()
+{
+	setlocale(LC_ALL, "RU");
+	const regex mailRegex(R"(\w+@\w+\.(?:com|ru|in|info))");//там, где мэил, то допустимо MAIL
+	const regex fioRegex(R"([A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+)");
+	const regex telephoneRegex(R"(\d{10})");
+	int k = -1;
+	string s;
+	while(true)
+	{
+		cin >> s;
+		cout <<  regex_match(s, mailRegex);
+	}
+	while(k!=0)
+	{
+		cout << "Выбирите необходимую опцию: " << endl << "2.Добавить пользователя" << endl<<"0.Выход"<<endl;
+
+		cin >> k;
+		
+		//добавить пользователя
+		if(k==2)
+		{
+			string f; string i; string o; int counter = 0;
+			do {
+				if (counter > 0)cout << endl << "Некорректный ввод, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
+				
+				cout << endl << "Введите ФИО ";
+				cin >> f; cin >> i; cin >> o; f = f + " " +i+" " +o;
+				
+				counter++;
+			} while (!regex_match(f,fioRegex));
+
+
+			string phone; int counter1 = 0;
+			do {
+				if (counter1 > 0)cout << endl << "Некорректный ввод, повтрите попытку";
+
+				cout << endl << "Введите номер телефона(без +7 или 8)";
+				cin >> phone;
+				counter1++;
+			} while (!regex_match(phone, telephoneRegex));
+
+
+			string mail; int counter2 = 0;
+			do{
+				if (counter2 > 0)cout << endl << "Некорректный ввод, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
+
+				cout << endl << "Введите e-mail ";
+				cin >> mail;
+				counter2++;
+			} while (!regex_match(mail, mailRegex));
+			
+
+
+			string globalStr = f + " "+ phone+ " " + mail + " ";
+			GlobalOut.open("Global.txt", ios::app);
+			GlobalOut << globalStr << endl;
+			GlobalOut.close();
+
+			NamesOut.open("Names.txt", ios::app);
+			NamesOut << f << endl;
+			NamesOut.close();
+
+
+			PhonesOut.open("Phones.txt", ios::app);
+			phoneFormat(phone);
+			PhonesOut << phone << endl;
+			PhonesOut.close();
+
+			EmailsOut.open("Emails.txt", ios::app);
+			EmailsOut << mail << endl;
+			EmailsOut.close();
+
+			cout << endl << "Пользователь успешно добавлен!" << endl;
+		}
+		
+	
+		
+	}
+
+
+	cout << endl << "Спасибо за использование программы!!!";
+	
+}
+
+// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
+// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
+
+// Советы по началу работы 
+//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
+//   2. В окне Team Explorer можно подключиться к системе управления версиями.
+//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
+//   4. В окне "Список ошибок" можно просматривать ошибки.
+//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
+//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
