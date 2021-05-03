@@ -8,36 +8,278 @@
 #include <fstream>
 
 using namespace std;
-ifstream NamesIn; ifstream PhonesIn; ifstream EmailsIn; ifstream GlobalIn;
-ofstream NamesOut; ofstream PhonesOut; ofstream EmailsOut; ofstream GlobalOut;
+
+ifstream NamesIn; ifstream PhonesIn; ifstream EmailsIn; ifstream GlobalIn; ifstream LoginsIn; ifstream PasswordsIn; ifstream BufferIn;
+ofstream NamesOut; ofstream PhonesOut; ofstream EmailsOut; ofstream GlobalOut; ofstream LoginsOut; ofstream PasswordsOut; ofstream BufferOut;
+//приведение телефона к требуемому виду
 void phoneFormat(string& s)
 {
+	
 	//+7-(222)-222-22-22
-	s = "+7-(" + s;
-	s.insert(7, ")-");
-	s.insert(12, "-");
-	s.insert(15, "-");
+	
+		s = "+7-(" + s;
+		s.insert(7, ")-");
+		s.insert(12, "-");
+		s.insert(15, "-");
+	
 }
 
+//поиск номера строки с указанным именем. При ненаходе получаем -1
+int findByName(string fio){
+	NamesIn.open("Names.txt");
+	int k = 1;
+	string str;
+	while(!NamesIn.eof())
+	{
+		getline(NamesIn,str);
+		
+		if(fio==str)
+		{
+			NamesIn.close();
+			return k;
+		}
+		k++;
+	}
+	NamesIn.close();
+	return -1;
+}
+
+//поиск номера строки с указанным логином. При ненаходе получаем -1
+int findByLogin(string login)
+{
+	//cout << "ya tut";
+	LoginsIn.open("Logins.txt");
+	int k = 1;
+	string str;
+	while(!LoginsIn.eof())
+	{
+		getline(LoginsIn, str);
+		if (login == str)
+		{
+			LoginsIn.close();
+			return k;
+		}
+		k++;
+	}
+	LoginsIn.close();
+	return -1;
+}
+
+//поиск номера строки с указанным телефоном. При ненаходе получаем -1
+int findByNumber(string number)
+{
+	phoneFormat(number);
+	PhonesIn.open("Phones.txt");
+	int k = 1;
+	string str;
+	while(!PhonesIn.eof())
+	{
+		getline(PhonesIn, str);
+		if(number==str)
+		{
+			PhonesIn.close();
+			return k;
+		}
+		k++;
+	}
+	PhonesIn.close();
+	return -1;
+}
+//вывод данных с найденной строки в Global
+void coutFromChosenNumberString(int n)
+{
+	GlobalIn.open("Global.txt");
+	int k = 1; string str;
+	while(!GlobalIn.eof())
+	{
+		getline(GlobalIn,str);
+		if (k == n) {
+			GlobalIn.close();
+			cout << endl <<"Найден пользователь: " +str << endl;
+			return;
+		}
+		k++;
+	}
+	
+}
+//получить пароль по номеру строки(пользователя)
+string findPasswordByNumber(int n)
+{
+	PasswordsIn.open("Passwords.txt");
+	int k = 1; string str;
+	while(!PasswordsIn.eof())
+	{
+		getline(PasswordsIn, str);
+		if(k==n)
+		{
+			PasswordsIn.close();
+			return str;
+		}
+		k++;
+	}
+	
+	PasswordsIn.close();
+	//я в любом случае найду пароль на указанной строке
+}
+
+void deleteUser(int n)
+{
+	cout << "начало";
+	cin.ignore();
+	//Имена
+	NamesIn.open("Names.txt"); BufferOut.open("Buffer.txt");
+	string str; int k = 1;
+	while (!NamesIn.eof())
+	{
+		getline(NamesIn, str);
+		if (k != n && str.size() > 1)
+		{	
+			BufferOut << str << endl;
+		}
+		k++;
+	}
+	NamesIn.close(); BufferOut.close(); NamesOut.open("Names.txt"); BufferIn.open("Buffer.txt");
+	str = "";
+	while(!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+		if (str.size() > 1) {
+			NamesOut << str << endl;
+		}
+	}
+	NamesOut.close(); BufferIn.close();
+	cout << "конец";
+	//Почты
+	EmailsIn.open("Emails.txt"); BufferOut.open("Buffer.txt");
+	k = 1;
+	while (!EmailsIn.eof())
+	{
+		getline(EmailsIn, str);
+		if (k != n&&str.size()>1)
+			BufferOut << str << endl;
+		k++;
+	}
+	EmailsIn.close(); BufferOut.close(); EmailsOut.open("Emails.txt"); BufferIn.open("Buffer.txt");
+	while (!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+	if (str.size() > 1)
+		EmailsOut << str << endl;
+	}
+	EmailsOut.close(); BufferIn.close();
+
+	//Телефоны
+	PhonesIn.open("Phones.txt"); BufferOut.open("Buffer.txt");
+	k = 1;
+	while (!PhonesIn.eof())
+	{
+		getline(PhonesIn, str);
+		if (k != n&&str.size()>1)
+			BufferOut << str << endl;
+		k++;
+	}
+	PhonesIn.close(); BufferOut.close(); PhonesOut.open("Phones.txt"); BufferIn.open("Buffer.txt");
+	while (!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+		if (str.size() > 1)
+		PhonesOut << str << endl;
+	}
+	PhonesOut.close(); BufferIn.close();
+
+	//Логины
+	LoginsIn.open("Logins.txt"); BufferOut.open("Buffer.txt");
+	k = 1;
+	while (!LoginsIn.eof())
+	{
+		getline(LoginsIn, str);
+		if (k != n&&str.size()>1)
+			BufferOut << str << endl;
+		k++;
+	}
+	LoginsIn.close(); BufferOut.close(); LoginsOut.open("Logins.txt"); BufferIn.open("Buffer.txt");
+	while (!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+			if (str.size() > 1)
+		LoginsOut << str << endl;
+	}
+	LoginsOut.close(); BufferIn.close();
+
+	//Пароли
+	PasswordsIn.open("Passwords.txt"); BufferOut.open("Buffer.txt");
+	k = 1;
+	while (!PasswordsIn.eof())
+	{
+		getline(PasswordsIn, str);
+		if (k != n&&str.size()>1)
+			BufferOut << str << endl;
+		k++;
+	}
+	PasswordsIn.close(); BufferOut.close(); PasswordsOut.open("Passwords.txt"); BufferIn.open("Buffer.txt");
+	while (!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+				if (str.size() > 1)
+		PasswordsOut << str << endl;
+	}
+	PasswordsOut.close(); BufferIn.close();
+
+	//Глобально
+	GlobalIn.open("Global.txt"); BufferOut.open("Buffer.txt");
+	k = 1;
+	while (!GlobalIn.eof())
+	{
+		getline(GlobalIn, str);
+		if (k != n&&str.size()>1)
+			BufferOut << str << endl;
+		k++;
+	}
+	GlobalIn.close(); BufferOut.close(); GlobalOut.open("Global.txt"); BufferIn.open("Buffer.txt");
+	while (!BufferIn.eof())
+	{
+		getline(BufferIn, str);
+					if (str.size() > 1)
+		GlobalOut << str << endl;
+	}
+	GlobalOut.close(); BufferIn.close();
+
+	cout << endl << "Пользователь успешно удален" << endl;
+}
 int main()
 {
 	setlocale(LC_ALL, "RU");
-	const regex mailRegex(R"(\w+@\w+\.(?:com|ru|in|info))");//там, где мэил, то допустимо MAIL
+	//const regex mailRegex(R"(\w+@\w+\.(?:com|ru|in|info))");//там, где мэил, то допустимо MAIL
+	const regex mailRegex(R"([\w|-]+\w+@\w+\.(?:com|ru|in|info))");
 	const regex fioRegex(R"([A-Z][a-z]+\s[A-Z][a-z]+\s[A-Z][a-z]+)");
 	const regex telephoneRegex(R"(\d{10})");
+	const regex passwordRegex(R"(^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$)");
+	//"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 	int k = -1;
-	string s;
-	while(true)
-	{
-		cin >> s;
-		cout <<  regex_match(s, mailRegex);
-	}
+	
+	
+	//Sena Ker John 0123456789 ssss@mail.ru maan assily
 	while(k!=0)
 	{
-		cout << "Выбирите необходимую опцию: " << endl << "2.Добавить пользователя" << endl<<"0.Выход"<<endl;
+		cout << "Выберите необходимую опцию: " << endl <<"1.Посмотреть список все пользователей"<< endl << "2.Добавить пользователя" <<endl<<"3.Удалить пользователя" << endl<<
+			"4.Изменить пользователя"<<endl<<"5.Отправить сообщение"<<endl<<"6.Сортировка по выбранному полю"<<endl<<"0.Выход"<<endl;
 
 		cin >> k;
 		
+		//просмотреть пользователей
+		if (k == 1) {
+			GlobalIn.open("Global.txt");
+			
+			string str;
+			while (!GlobalIn.eof())
+			{
+				getline(GlobalIn, str);
+				cout <<str << endl;
+				
+			}
+			GlobalIn.close();
+		}
+
 		//добавить пользователя
 		if(k==2)
 		{
@@ -71,9 +313,25 @@ int main()
 				counter2++;
 			} while (!regex_match(mail, mailRegex));
 			
+			string login; int counter3 = 0;
+			do {
+				if (counter3 > 0)cout << endl << "Некорректный ввод, повторите попытку ";
+				cout << endl << "Введите логин ";
+				cin >> login;
+				counter3++;
+			} while (login.size() < 2);
+			
 
+			string password; int counter4 = 0;
+			do {
+				if (counter4 > 0)cout << endl << "Некорректный ввод, повторите попытку ";
+				cout << endl << "Введите пароль ";
+				cin >> password;
+				counter4++;
+			} while (!regex_match(password, passwordRegex));
 
-			string globalStr = f + " "+ phone+ " " + mail + " ";
+			phoneFormat(phone);
+			string globalStr = f + " "+ phone+ " " + mail + " "+login;
 			GlobalOut.open("Global.txt", ios::app);
 			GlobalOut << globalStr << endl;
 			GlobalOut.close();
@@ -84,7 +342,6 @@ int main()
 
 
 			PhonesOut.open("Phones.txt", ios::app);
-			phoneFormat(phone);
 			PhonesOut << phone << endl;
 			PhonesOut.close();
 
@@ -92,11 +349,124 @@ int main()
 			EmailsOut << mail << endl;
 			EmailsOut.close();
 
+			LoginsOut.open("Logins.txt", ios::app);
+			LoginsOut << login << endl;
+			LoginsOut.close();
+
+			PasswordsOut.open("Passwords.txt", ios::app);
+			PasswordsOut << password << endl;
+			PasswordsOut.close();
+
 			cout << endl << "Пользователь успешно добавлен!" << endl;
 		}
+
+		//удалить пользователя
+		if(k==3)
+		{
+			cout << "Для удаления пользователя нужно найти его в системе. Для поиска введите ФИО, номер телефона или логин"<<endl;
+			string str; bool isLogin = false; int nomer = -1;
+			int count = 0;
+			do{
+				if (count > 0)cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
+				//cout << "Выберите:"<<endl<<"1)Поиск по ФИО" <<endl <<"2)Поиск по телефону или логину ";
+				cin.ignore();
+				getline(cin,str);
+				
+				if (findByLogin(str) != -1)isLogin = true;
+				count++;
+			} //while (!regex_match(str, fioRegex) && !regex_match(str, telephoneRegex) && findByLogin(str) != -1);
+			while (!regex_match(str, fioRegex)&&!regex_match(str,telephoneRegex)&&!isLogin);
+			//cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;'
+
+			//нашлось, все круто, теперь
+			if (isLogin)
+			{
+				nomer = findByLogin(str);
+				coutFromChosenNumberString(nomer);
+			}
+			else if(regex_match(str,fioRegex))
+			{
+				nomer = findByName(str);
+				coutFromChosenNumberString(nomer);
+			}
+			else if(regex_match(str,telephoneRegex))
+			{
+				nomer = findByNumber(str);
+				coutFromChosenNumberString(nomer);
+			}
+
+			//Пользователя вывыели, теперь нужна проверка на пароль
+			cout << "Для подтверждения удаления пользователя введите пароль или otmena для отмены";
+			//cin.ignore();
+			//getline(cin, str);
+			cin >> str;
+			if(str=="otmena")
+			{
+				cout << "Удаление пользователя отменено";
+			}
+			else
+			{
+				string currentPassword = findPasswordByNumber(nomer);
+				cout << "ПАРОЛЬ:" << currentPassword;
+				if(str!=currentPassword)
+				{
+					cout << "Неверный пароль. Осталось 2 попытки. Введите пароль:"<<endl;
+					/*cin.ignore();
+					*/
+					//getline(cin, str1);
+					string str1;
+					cin >> str1;
+					if(str1!=currentPassword)
+					{
+						cout << "Неверный пароль. Осталось 1 попытка. Введите пароль:"<<endl;
+						/*cin.ignore();
+						
+						getline(cin, str2);*/
+						string str2;
+						cin >> str2;
+						if(str2!=currentPassword)
+						{
+							cout << "Неверный пароль. Повторите попытку удаления позже"<<endl;
+						}
+						else
+						{
+							deleteUser(nomer);
+						}
+					}
+					else
+					{
+						deleteUser(nomer);
+					}
+				}
+				else
+				{
+					deleteUser(nomer);
+				}
+			}
+
+			//str = "";
+		}
 		
-	
+		//изменить пользователя
+		if(k==4)
+		{
+
+		}
+
+		//отправить сообщение
+		if(k==5)
+		{
+			cout << endl << "Добро пожаловать в меню отправки сообщений" << endl << "Чтобы отправить сообщение пользователю, нужно сначала его найти"<<end<<
+				"Поиск происходит по ФИО, логину, номеру телефона";
+
+			
+		}
+		//сортировка по выбранному полю
+		if(k==6)
+		{
 		
+		}
+
 	}
 
 
