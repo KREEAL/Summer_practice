@@ -6,6 +6,8 @@
 #include <string>
 #include <regex>
 #include <fstream>
+#include <vector>
+
 
 using namespace std;
 
@@ -47,7 +49,6 @@ int findByName(string fio){
 //поиск номера строки с указанным логином. При ненаходе получаем -1
 int findByLogin(string login)
 {
-	//cout << "ya tut";
 	LoginsIn.open("Logins.txt");
 	int k = 1;
 	string str;
@@ -85,6 +86,27 @@ int findByNumber(string number)
 	PhonesIn.close();
 	return -1;
 }
+
+//поиск номера строки с указанным e-mal. При ненаходе получаем -1
+int findByEmail(string mail)
+{
+	EmailsIn.open("Emails.txt");
+	int k = 1;
+	string str;
+	cin.ignore();
+	while(!EmailsIn.eof())
+	{
+		getline(EmailsIn, str);
+		if(mail==str)
+		{
+			EmailsIn.close();
+			return k;
+		}
+		k++;
+	}
+	EmailsIn.close();
+	return -1;
+}
 //вывод данных с найденной строки в Global
 void coutFromChosenNumberString(int n)
 {
@@ -120,6 +142,23 @@ string findPasswordByNumber(int n)
 	
 	PasswordsIn.close();
 	//я в любом случае найду пароль на указанной строке
+}
+
+int correctionCheck(string str,regex fio,regex phone)
+{
+	if(regex_match(str,fio))
+	{
+		return 1;
+	}
+	if(regex_match(str,phone))
+	{
+		return 2;
+	}
+	if(findByLogin(str)!=-1)
+	{
+		return 3;
+	}
+	return 0;
 }
 
 void deleteUser(int n)
@@ -257,11 +296,11 @@ int main()
 	//"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 	int k = -1;
 	
-	
+	//cout << findByLogin("Beany");
 	//Sena Ker John 0123456789 ssss@mail.ru maan assily
 	while(k!=0)
 	{
-		cout << "Выберите необходимую опцию: " << endl <<"1.Посмотреть список все пользователей"<< endl << "2.Добавить пользователя" <<endl<<"3.Удалить пользователя" << endl<<
+		cout << endl << "Выберите необходимую опцию: " << endl << "1.Посмотреть список все пользователей" << endl << "2.Добавить пользователя" << endl << "3.Удалить пользователя" << endl <<
 			"4.Изменить пользователя"<<endl<<"5.Отправить сообщение"<<endl<<"6.Сортировка по выбранному полю"<<endl<<"0.Выход"<<endl;
 
 		cin >> k;
@@ -366,67 +405,88 @@ int main()
 			cout << "Для удаления пользователя нужно найти его в системе. Для поиска введите ФИО, номер телефона или логин"<<endl;
 			string str; bool isLogin = false; int nomer = -1;
 			int count = 0;
-			do{
-				if (count > 0)cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
-				//cout << "Выберите:"<<endl<<"1)Поиск по ФИО" <<endl <<"2)Поиск по телефону или логину ";
-				cin.ignore();
-				getline(cin,str);
-				
-				if (findByLogin(str) != -1)isLogin = true;
-				count++;
-			} //while (!regex_match(str, fioRegex) && !regex_match(str, telephoneRegex) && findByLogin(str) != -1);
-			while (!regex_match(str, fioRegex)&&!regex_match(str,telephoneRegex)&&!isLogin);
-			//cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;'
+			//do{
+			//	if (count > 0)cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
+			//	//cout << "Выберите:"<<endl<<"1)Поиск по ФИО" <<endl <<"2)Поиск по телефону или логину ";
+			//	cin.ignore();
+			//	getline(cin,str);
+			//	if (findByLogin(str) != -1)isLogin = true;
+			//	count++;
+			//} //while (!regex_match(str, fioRegex) && !regex_match(str, telephoneRegex) && findByLogin(str) != -1);
+			////while (!regex_match(str, fioRegex)&&!regex_match(str,telephoneRegex)&&!isLogin);
+			//while (correctionCheck(str,fioRegex,telephoneRegex)==0);
+			cin.ignore();
+			getline(cin, str);
+			while(correctionCheck(str, fioRegex, telephoneRegex) == 0)
+			{
+				cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
+				getline(cin, str);
+			}
+			cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;
 
 			//нашлось, все круто, теперь
-			if (isLogin)
+			if (findByLogin(str)!=-1)
 			{
 				nomer = findByLogin(str);
-				coutFromChosenNumberString(nomer);
+				//coutFromChosenNumberString(nomer);
 			}
-			else if(regex_match(str,fioRegex))
+			if(regex_match(str,fioRegex))
 			{
 				nomer = findByName(str);
-				coutFromChosenNumberString(nomer);
+				//coutFromChosenNumberString(nomer);
 			}
-			else if(regex_match(str,telephoneRegex))
+			if(regex_match(str,telephoneRegex))
 			{
 				nomer = findByNumber(str);
-				coutFromChosenNumberString(nomer);
+				
+				//coutFromChosenNumberString(nomer);
+				
 			}
 
-			//Пользователя вывыели, теперь нужна проверка на пароль
-			cout << "Для подтверждения удаления пользователя введите пароль или otmena для отмены";
-			//cin.ignore();
-			//getline(cin, str);
-			cin >> str;
-			if(str=="otmena")
+			if(nomer==-1)
 			{
-				cout << "Удаление пользователя отменено";
+				cout<<"Пользователь с указанными данными не найден, повторите попытку позже"<<endl;
 			}
-			else
-			{
-				string currentPassword = findPasswordByNumber(nomer);
-				cout << "ПАРОЛЬ:" << currentPassword;
-				if(str!=currentPassword)
+			else {
+				coutFromChosenNumberString(nomer);
+
+				//Пользователя вывыели, теперь нужна проверка на пароль
+				cout << "Для подтверждения удаления пользователя введите пароль или otmena для отмены";
+				//cin.ignore();
+				//getline(cin, str);
+				cin >> str;
+				if (str == "otmena")
 				{
-					cout << "Неверный пароль. Осталось 2 попытки. Введите пароль:"<<endl;
-					/*cin.ignore();
-					*/
-					//getline(cin, str1);
-					string str1;
-					cin >> str1;
-					if(str1!=currentPassword)
+					cout << "Удаление пользователя отменено";
+				}
+				else
+				{
+					string currentPassword = findPasswordByNumber(nomer);
+					cout << "ПАРОЛЬ:" << currentPassword;
+					if (str != currentPassword)
 					{
-						cout << "Неверный пароль. Осталось 1 попытка. Введите пароль:"<<endl;
+						cout << "Неверный пароль. Осталось 2 попытки. Введите пароль:" << endl;
 						/*cin.ignore();
-						
-						getline(cin, str2);*/
-						string str2;
-						cin >> str2;
-						if(str2!=currentPassword)
+						*/
+						//getline(cin, str1);
+						string str1;
+						cin >> str1;
+						if (str1 != currentPassword)
 						{
-							cout << "Неверный пароль. Повторите попытку удаления позже"<<endl;
+							cout << "Неверный пароль. Осталось 1 попытка. Введите пароль:" << endl;
+							/*cin.ignore();
+
+							getline(cin, str2);*/
+							string str2;
+							cin >> str2;
+							if (str2 != currentPassword)
+							{
+								cout << "Неверный пароль. Повторите попытку удаления позже" << endl;
+							}
+							else
+							{
+								deleteUser(nomer);
+							}
 						}
 						else
 						{
@@ -438,12 +498,7 @@ int main()
 						deleteUser(nomer);
 					}
 				}
-				else
-				{
-					deleteUser(nomer);
-				}
 			}
-
 			//str = "";
 		}
 		
@@ -454,17 +509,133 @@ int main()
 		}
 
 		//отправить сообщение
-		if(k==5)
+		if (k == 5)
 		{
-			cout << endl << "Добро пожаловать в меню отправки сообщений" << endl << "Чтобы отправить сообщение пользователю, нужно сначала его найти"<<end<<
+			cout << endl << "Добро пожаловать в меню отправки сообщений" << endl << "Чтобы отправить сообщение пользователю, нужно сначала его найти" << endl <<
 				"Поиск происходит по ФИО, логину, номеру телефона";
 
-			
+			string str; int nomer = -1;
+			int count = 0;
+
+			cin.ignore();
+			getline(cin, str);
+			while (correctionCheck(str, fioRegex, telephoneRegex) == 0)
+			{
+				cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
+				getline(cin, str);
+			}
+			cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;
+
+			//нашлось, все круто, теперь
+			if (findByLogin(str) != -1)
+			{
+				nomer = findByLogin(str);
+				//coutFromChosenNumberString(nomer);
+			}
+			if (regex_match(str, fioRegex))
+			{
+				nomer = findByName(str);
+				//coutFromChosenNumberString(nomer);
+			}
+			if (regex_match(str, telephoneRegex))
+			{
+				nomer = findByNumber(str);
+
+				//coutFromChosenNumberString(nomer);
+
+			}
+
+			if (nomer == -1)
+			{
+				cout << "Пользователь с указанными данными не найден, повторите попытку позже" << endl;
+			}
+			else {
+				cout << "Введите сообщение для этого пользователя: " << endl;
+				getline(cin, str);
+				cout << endl << "Сообщение успешно отправлено!!!!" << endl;
+			}
 		}
 		//сортировка по выбранному полю
 		if(k==6)
 		{
-		
+			cout << endl << "Вы можете отсортировать пользователей по следующим категориям: " << endl << "1.ФИО" << endl << "2.E-mail"<<endl<<"3.Логин";
+			int choose = -1;
+			cin >> choose;
+			
+			//по фио
+			if(choose==1)
+			{
+				vector<string> names;
+				NamesIn.open("Names.txt");
+				string str; cin.ignore();
+				while(!NamesIn.eof())
+				{
+					getline(NamesIn, str);
+					if (str.size() > 1)
+						names.push_back(str);
+				}
+				NamesIn.close();
+				sort(names.begin(), names.end());
+
+				for(int i=0;i<names.size();i++)
+				{
+					int x = findByName(names[i]);
+
+					if(x!=-1)
+					coutFromChosenNumberString(x);
+				}
+			}
+
+			//по мэилу
+			if(choose==2)
+			{
+				vector<string> mails;
+				EmailsIn.open("Emails.txt");
+				string str; cin.ignore();
+				while(!EmailsIn.eof())
+				{
+					getline(EmailsIn, str);
+					if (str.size() > 1)
+						mails.push_back(str);
+				}
+				EmailsIn.close();
+				sort(mails.begin(), mails.end());
+
+				for(int i=0;i<mails.size();i++)
+				{
+					int x = findByEmail(mails[i]);
+
+					if (x != -1)
+						coutFromChosenNumberString(x);
+				}
+			}
+
+			//по логину
+			if (choose == 3) {
+				vector<string> logins;
+				LoginsIn.open("Logins.txt");
+				string str; cin.ignore();
+				while (!LoginsIn.eof())
+				{
+					getline(LoginsIn, str);
+					if(str.size()>1)
+					logins.push_back(str);
+					
+				}
+				LoginsIn.close();
+				sort(logins.begin(), logins.end());
+				
+				for(int i=0;i<logins.size();i++)
+				{
+					
+					int x = findByLogin(logins[i]);
+				
+					if(x!=-1)
+					coutFromChosenNumberString(x);
+				}
+
+
+			}
 		}
 
 	}
@@ -474,13 +645,3 @@ int main()
 	
 }
 
-// Запуск программы: CTRL+F5 или меню "Отладка" > "Запуск без отладки"
-// Отладка программы: F5 или меню "Отладка" > "Запустить отладку"
-
-// Советы по началу работы 
-//   1. В окне обозревателя решений можно добавлять файлы и управлять ими.
-//   2. В окне Team Explorer можно подключиться к системе управления версиями.
-//   3. В окне "Выходные данные" можно просматривать выходные данные сборки и другие сообщения.
-//   4. В окне "Список ошибок" можно просматривать ошибки.
-//   5. Последовательно выберите пункты меню "Проект" > "Добавить новый элемент", чтобы создать файлы кода, или "Проект" > "Добавить существующий элемент", чтобы добавить в проект существующие файлы кода.
-//   6. Чтобы снова открыть этот проект позже, выберите пункты меню "Файл" > "Открыть" > "Проект" и выберите SLN-файл.
