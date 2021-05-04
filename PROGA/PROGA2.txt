@@ -93,9 +93,10 @@ int findByEmail(string mail)
 	EmailsIn.open("Emails.txt");
 	int k = 1;
 	string str;
-	cin.ignore();
+
 	while(!EmailsIn.eof())
 	{
+		
 		getline(EmailsIn, str);
 		if(mail==str)
 		{
@@ -124,26 +125,8 @@ void coutFromChosenNumberString(int n)
 	}
 	
 }
-//получить пароль по номеру строки(пользователя)
-string findPasswordByNumber(int n)
-{
-	PasswordsIn.open("Passwords.txt");
-	int k = 1; string str;
-	while(!PasswordsIn.eof())
-	{
-		getline(PasswordsIn, str);
-		if(k==n)
-		{
-			PasswordsIn.close();
-			return str;
-		}
-		k++;
-	}
-	
-	PasswordsIn.close();
-	//я в любом случае найду пароль на указанной строке
-}
 
+//проверка корректности
 int correctionCheck(string str,regex fio,regex phone)
 {
 	if(regex_match(str,fio))
@@ -160,6 +143,95 @@ int correctionCheck(string str,regex fio,regex phone)
 	}
 	return 0;
 }
+
+//получить пароль по номеру строки(пользователя)
+string findPasswordByNumber(int n)
+{
+	PasswordsIn.open("Passwords.txt");
+	int k = 1; string str;
+	while (!PasswordsIn.eof())
+	{
+		getline(PasswordsIn, str);
+		if (k == n)
+		{
+			PasswordsIn.close();
+			return str;
+		}
+		k++;
+	}
+
+	PasswordsIn.close();
+}
+string findLoginByNumber(int n)
+{
+	LoginsIn.open("Logins.txt");
+	int k = 1; string str;
+	while (!LoginsIn.eof())
+	{
+		getline(LoginsIn, str);
+		if (k == n)
+		{
+			LoginsIn.close();
+			return str;
+		}
+		k++;
+	}
+
+	LoginsIn.close();
+	//я в любом случае найду пароль на указанной строке
+}
+string findNameByNumber(int n)
+{
+	NamesIn.open("Names.txt");
+	int k = 1; string str;
+	while (!NamesIn.eof())
+	{
+		getline(NamesIn, str);
+		if (k == n)
+		{
+			NamesIn.close();
+			return str;
+		}
+		k++;
+	}
+
+	NamesIn.close();
+}
+string findPhoneByNumber(int n)
+{
+	PhonesIn.open("Phones.txt");
+	int k = 1; string str;
+	while (!PhonesIn.eof())
+	{
+		getline(PhonesIn, str);
+		if (k == n)
+		{
+			PhonesIn.close();
+			return str;
+		}
+		k++;
+	}
+
+	PhonesIn.close();
+}
+string findMailByNumber(int n)
+{
+	EmailsIn.open("Emails.txt");
+	int k = 1; string str;
+	while (!EmailsIn.eof())
+	{
+		getline(EmailsIn, str);
+		if (k == n)
+		{
+			EmailsIn.close();
+			return str;
+		}
+		k++;
+	}
+
+	EmailsIn.close();
+}
+
 
 void deleteUser(int n)
 {
@@ -296,6 +368,26 @@ int main()
 	//"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 	int k = -1;
 	
+	/*vector<string> mails;
+	EmailsIn.open("Emails.txt");
+	string str; cin.ignore();
+	while (!EmailsIn.eof())
+	{
+		getline(EmailsIn, str);
+		if (str.size() > 1)
+			mails.push_back(str);
+	}
+	EmailsIn.close();
+	sort(mails.begin(), mails.end());
+
+	for (int i = 0; i < mails.size(); i++)
+	{
+		int x = findByEmail(mails[i]);
+
+		if (x != -1)
+			coutFromChosenNumberString(x);
+	}*/
+	//system("pause");
 	//cout << findByLogin("Beany");
 	//Sena Ker John 0123456789 ssss@mail.ru maan assily
 	while(k!=0)
@@ -324,41 +416,41 @@ int main()
 		{
 			string f; string i; string o; int counter = 0;
 			do {
-				if (counter > 0)cout << endl << "Некорректный ввод, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
+				if (counter > 0)cout << endl << "Некорректный ввод или такой пользователь уже существует, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
 				
 				cout << endl << "Введите ФИО ";
 				cin >> f; cin >> i; cin >> o; f = f + " " +i+" " +o;
 				
 				counter++;
-			} while (!regex_match(f,fioRegex));
+			} while (!regex_match(f,fioRegex)||findByName(f)!=-1);
 
 
 			string phone; int counter1 = 0;
 			do {
-				if (counter1 > 0)cout << endl << "Некорректный ввод, повтрите попытку";
+				if (counter1 > 0)cout << endl << "Некорректный ввод или пользователь с таким номером уже существует, повтрите попытку";
 
 				cout << endl << "Введите номер телефона(без +7 или 8)";
 				cin >> phone;
 				counter1++;
-			} while (!regex_match(phone, telephoneRegex));
+			} while (!regex_match(phone, telephoneRegex)||findByNumber(phone)!=-1);
 
 
 			string mail; int counter2 = 0;
 			do{
-				if (counter2 > 0)cout << endl << "Некорректный ввод, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
+				if (counter2 > 0)cout << endl << "Некорректный ввод или пользователь с такой почтой уже существует, повторите попытку ";//в первый раз не сработает, но все последующие разы должно
 
 				cout << endl << "Введите e-mail ";
 				cin >> mail;
 				counter2++;
-			} while (!regex_match(mail, mailRegex));
+			} while (!regex_match(mail, mailRegex)||findByEmail(mail)!=-1);
 			
 			string login; int counter3 = 0;
 			do {
-				if (counter3 > 0)cout << endl << "Некорректный ввод, повторите попытку ";
+				if (counter3 > 0)cout << endl << "Некорректный ввод или пользователь с таким логином уже существуеты, повторите попытку ";
 				cout << endl << "Введите логин ";
 				cin >> login;
 				counter3++;
-			} while (login.size() < 2);
+			} while ((login.size() < 2) || (findByLogin(login)!=-1));
 			
 
 			string password; int counter4 = 0;
@@ -422,7 +514,7 @@ int main()
 				cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
 				getline(cin, str);
 			}
-			cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;
+			//cout << "ИЗ ДУВАЙЛА Я ВЫШЕЛ С:" << str;
 
 			//нашлось, все круто, теперь
 			if (findByLogin(str)!=-1)
@@ -503,11 +595,97 @@ int main()
 		}
 		
 		//изменить пользователя
-		if(k==4)
+		if (k == 4)
 		{
+			cout << "Вы находитесь в меню изменения данных пользователей. Чтобы изменить данные, нужно найти пользователя" << endl <<
+				"Для поиска введите ФИО, номер телефона или логин" << endl;
+			int nomer = -1;
+			cin.ignore();
+			string str; getline(cin, str);
+			while (correctionCheck(str, fioRegex, telephoneRegex) == 0)
+			{
+				cout << endl << "По указанным данным не удалось найти пользователя. Повторите ввод";
+				getline(cin, str);
+			}
+			if (findByLogin(str) != -1)
+			{
+				nomer = findByLogin(str);
+				//coutFromChosenNumberString(nomer);
+			}
+			if (regex_match(str, fioRegex))
+			{
+				nomer = findByName(str);
+				//coutFromChosenNumberString(nomer);
+			}
+			if (regex_match(str, telephoneRegex))
+			{
+				nomer = findByNumber(str);
 
+				//coutFromChosenNumberString(nomer);
+			}
+
+			if (nomer == -1)
+			{
+				cout << "Пользователь с указанными данными не найден, повторите попытку позже" << endl;
+			}
+			else
+			{
+				coutFromChosenNumberString(nomer);
+				cout << endl << "Для продолжения введите пароль: " << endl;
+				string currentPassword = findPasswordByNumber(nomer);
+				cout << "ПАРОЛЬ:" << currentPassword;
+				int q = 0;
+				while (q < 3) {
+					cout << "Осталось " << 3 - q << " попытки, введите пароль: " << endl;
+					cin >> str;
+					if (str == currentPassword)q = 11;
+					q++;
+				}
+				//Нашли юзера, ввели пароль, теперь надо изменять!!!
+				if (q >= 10) {
+					cout << "Выберите поле для изменения:" << endl << "1.ФИО" << endl << "2.E-Mail" << endl << "3.Номер телефона" << endl << "4.Логин" << endl << "5.Пароль" << endl;
+					int k = 0; cin >> k;
+					while(k<1||k>5)
+					{
+						cout << endl << "Нет такого пункта, повторите ввод" << endl;
+						cin >> k;
+					}
+					//Изменяем ФИО
+					cin.ignore();
+					string newGlobal;
+					if(k==1)
+					{
+						string newName;
+						getline(cin, newName);
+						newName = 
+					}
+					//Изменяем почту
+					if(k==2)
+					{
+
+					}
+					//Изменяем номер
+					if(k==3)
+					{
+					
+					}
+					//изменяем логин
+					if(k==4)
+					{
+						
+					}
+					//изменяем пароль	
+					if(k==5)
+					{
+					
+					}
+				}
+				else {
+					cout << endl << "Ошибка ввода пароля, повторите позже";
+				}
+
+			}
 		}
-
 		//отправить сообщение
 		if (k == 5)
 		{
@@ -561,6 +739,11 @@ int main()
 			cout << endl << "Вы можете отсортировать пользователей по следующим категориям: " << endl << "1.ФИО" << endl << "2.E-mail"<<endl<<"3.Логин";
 			int choose = -1;
 			cin >> choose;
+			while(choose>3||choose<1)
+			{
+				cout << endl << "Нет такого пункта, повторите ввод" << endl;
+				cin >> choose;
+			}
 			
 			//по фио
 			if(choose==1)
