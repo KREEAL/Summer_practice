@@ -232,10 +232,9 @@ string findMailByNumber(int n)
 	EmailsIn.close();
 }
 
-
 void deleteUser(int n)
 {
-	cout << "начало";
+	
 	cin.ignore();
 	//Имена
 	NamesIn.open("Names.txt"); BufferOut.open("Buffer.txt");
@@ -259,7 +258,7 @@ void deleteUser(int n)
 		}
 	}
 	NamesOut.close(); BufferIn.close();
-	cout << "конец";
+	
 	//Почты
 	EmailsIn.open("Emails.txt"); BufferOut.open("Buffer.txt");
 	k = 1;
@@ -357,6 +356,40 @@ void deleteUser(int n)
 
 	cout << endl << "Пользователь успешно удален" << endl;
 }
+//собирает данные из файликов, перезаписывает конкретного юзера в global
+void changeUser(int n)
+{
+	string newUser; int counter = 1;
+	newUser = findNameByNumber(n) + " " + findPhoneByNumber(n) + " " + findMailByNumber(n) + " " + findLoginByNumber(n);
+	GlobalIn.open("Global.txt"); BufferOut.open("Buffer.txt");
+	string s;
+	while(!GlobalIn.eof())
+	{
+		getline(GlobalIn, s);
+		if (counter != n) {
+			if (s.size() > 1)
+			{
+				BufferOut << s << endl;
+			}
+		}
+		else
+		{
+			BufferOut << newUser << endl;
+		}
+		counter++; 
+	}
+	GlobalIn.close(); BufferOut.close(); GlobalOut.open("Global.txt"); BufferIn.open("Buffer.txt");
+	while(!BufferIn.eof())
+	{
+		getline(BufferIn, s);
+		if(s.size()>1)
+		{
+			GlobalOut << s << endl;
+		}
+	}
+	GlobalOut.close(); BufferIn.close();
+
+}
 int main()
 {
 	setlocale(LC_ALL, "RU");
@@ -368,6 +401,7 @@ int main()
 	//"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$"
 	int k = -1;
 	
+
 	/*vector<string> mails;
 	EmailsIn.open("Emails.txt");
 	string str; cin.ignore();
@@ -653,32 +687,259 @@ int main()
 					//Изменяем ФИО
 					cin.ignore();
 					string newGlobal;
+					//изменяем имя
 					if(k==1)
 					{
+						//получение нового ФИО
+						cout << endl<<"Введите новое ФИО" << endl;
 						string newName;
 						getline(cin, newName);
-						newName = 
+						while(!regex_match(newName,fioRegex)||findByName(newName)!=-1)
+						{
+							cout << endl << "Некорректный ввод или такое ФИО уже существует, повторите попытку" << endl;
+							getline(cin, newName);
+						}
+
+						//записываем в буфер текущие ФИО. На строке nomer записываем новое имя
+						string newS; int schetchick = 1;
+						NamesIn.open("Names.txt"); BufferOut.open("Buffer.txt");
+						while(!NamesIn.eof())
+						{
+							//проверка на строку nomer
+							if(schetchick!=nomer)
+							{
+								
+								getline(NamesIn, newS);
+								if (newS.size() > 1)
+									BufferOut << newS << endl;
+							}
+							else 
+							{
+
+								getline(NamesIn, newS);
+								
+								if (newS.size() > 1) {
+									newS = newName;
+									BufferOut << newS << endl;
+								}
+							}
+							schetchick++;
+						}
+						//переоткрыли файлы
+						NamesIn.close(); BufferOut.close(); NamesOut.open("Names.txt"); BufferIn.open("Buffer.txt");
+						newS = "";
+						//просто запись из буфера в Names, с уже измененным именем
+						while (!BufferIn.eof())
+						{
+							getline(BufferIn, newS);
+							if (newS.size() > 1) {
+								NamesOut << newS << endl;
+							}
+						}
+						NamesOut.close(); BufferIn.close();
+						//перезапись в глобальном файле
+						changeUser(nomer);
 					}
 					//Изменяем почту
 					if(k==2)
 					{
+						cout << endl << "Введите новую почту" << endl;
+						string newMail;
+						getline(cin, newMail);
+						while (!regex_match(newMail, mailRegex)||findByEmail(newMail)!=-1)
+						{
+							cout << endl << "Некорректный ввод или такая почта уже существует, повторите попытку" << endl;
+							getline(cin, newMail);
+						}
+						string newS; int schetchick = 1;
+						EmailsIn.open("Emails.txt"); BufferOut.open("Buffer.txt");
+						while (!EmailsIn.eof())
+						{
+							if (schetchick != nomer)
+							{
 
+								getline(EmailsIn, newS);
+								if (newS.size() > 1)
+									BufferOut << newS << endl;
+							}
+							else
+							{
+
+								getline(EmailsIn, newS);
+
+								if (newS.size() > 1) {
+									newS = newMail;
+									BufferOut << newS << endl;
+								}
+							}
+							schetchick++;
+						}
+						EmailsIn.close(); BufferOut.close(); EmailsOut.open("Emails.txt"); BufferIn.open("Buffer.txt");
+						newS = "";
+						while (!BufferIn.eof())
+						{
+							getline(BufferIn, newS);
+							if (newS.size() > 1) {
+								EmailsOut << newS << endl;
+							}
+						}
+						EmailsOut.close(); BufferIn.close();
+
+						changeUser(nomer);
 					}
 					//Изменяем номер
 					if(k==3)
 					{
-					
+						cout << endl << "Введите новый телефон" << endl;
+						string newPhone;
+						getline(cin, newPhone);
+						while (!regex_match(newPhone, telephoneRegex)||findByNumber(newPhone)!=-1)
+						{
+							cout << endl << "Некорректный ввод или такой номер уже существует, повторите попытку" << endl;
+							getline(cin, newPhone);
+						}
+						//приведение к требуемому формату
+						phoneFormat(newPhone);
+						string newS; int schetchick = 1;
+						PhonesIn.open("Phones.txt"); BufferOut.open("Buffer.txt");
+						while (!PhonesIn.eof())
+						{
+							if (schetchick != nomer)
+							{
+
+								getline(PhonesIn, newS);
+								if (newS.size() > 1)
+									BufferOut << newS << endl;
+							}
+							else
+							{
+
+								getline(PhonesIn, newS);
+
+								if (newS.size() > 1) {
+									newS = newPhone;
+									BufferOut << newS << endl;
+								}
+							}
+							schetchick++;
+						}
+						PhonesIn.close(); BufferOut.close(); PhonesOut.open("Phones.txt"); BufferIn.open("Buffer.txt");
+						newS = "";
+						while (!BufferIn.eof())
+						{
+							getline(BufferIn, newS);
+							if (newS.size() > 1) {
+								PhonesOut << newS << endl;
+							}
+						}
+						PhonesOut.close(); BufferIn.close();
+
+						changeUser(nomer);
 					}
 					//изменяем логин
 					if(k==4)
 					{
-						
+						cout << endl << "Введите новый логин" << endl;
+						string newLogin;
+						getline(cin, newLogin);
+						while ((newLogin.size() < 2)||(findByLogin(newLogin)!=-1))
+						{							
+							cout << endl << "Некорректный ввод или такой логин уже существует, повторите попытку" << endl;
+							getline(cin, newLogin);
+						}
+
+						//записываем в буфер текущие ФИО. На строке nomer записываем новое имя
+						string newS; int schetchick = 1;
+						LoginsIn.open("Logins.txt"); BufferOut.open("Buffer.txt");
+						while (!LoginsIn.eof())
+						{
+							//проверка на строку nomer
+							if (schetchick != nomer)
+							{
+
+								getline(LoginsIn, newS);
+								if (newS.size() > 1)
+									BufferOut << newS << endl;
+							}
+							else
+							{
+
+								getline(LoginsIn, newS);
+
+								if (newS.size() > 1) {
+									newS = newLogin;
+									BufferOut << newS << endl;
+								}
+							}
+							schetchick++;
+						}
+						//переоткрыли файлы
+						LoginsIn.close(); BufferOut.close(); LoginsOut.open("Logins.txt"); BufferIn.open("Buffer.txt");
+						newS = "";
+						//просто запись из буфера в Names, с уже измененным именем
+						while (!BufferIn.eof())
+						{
+							getline(BufferIn, newS);
+							if (newS.size() > 1) {
+								LoginsOut << newS << endl;
+							}
+						}
+						LoginsOut.close(); BufferIn.close();
+						//перезапись в глобальном файле
+						changeUser(nomer);
 					}
 					//изменяем пароль	
 					if(k==5)
 					{
-					
+						cout << endl << "Введите новый пароль" << endl;
+						string newPassword;
+						getline(cin, newPassword);
+						while (!regex_match(newPassword, passwordRegex))
+						{
+							cout << endl << "Некорректный ввод, повторите попытку" << endl;
+							getline(cin, newPassword);
+						}
+
+						//записываем в буфер текущие пароли. На строке nomer записываем новый пароль
+						string newS; int schetchick = 1;
+						PasswordsIn.open("Passwords.txt"); BufferOut.open("Buffer.txt");
+						while (!PasswordsIn.eof())
+						{
+							//проверка на строку nomer
+							if (schetchick != nomer)
+							{
+
+								getline(PasswordsIn, newS);
+								if (newS.size() > 1)
+									BufferOut << newS << endl;
+							}
+							else
+							{
+
+								getline(PasswordsIn, newS);
+
+								if (newS.size() > 1) {
+									newS = newPassword;
+									BufferOut << newS << endl;
+								}
+							}
+							schetchick++;
+						}
+						//переоткрыли файлы
+						PasswordsIn.close(); BufferOut.close(); PasswordsOut.open("Passwords.txt"); BufferIn.open("Buffer.txt");
+						newS = "";
+						//просто запись из буфера в Names, с уже измененным именем
+						while (!BufferIn.eof())
+						{
+							getline(BufferIn, newS);
+							if (newS.size() > 1) {
+								PasswordsOut << newS << endl;
+							}
+						}
+						PasswordsOut.close(); BufferIn.close();
+												
 					}
+					cout << endl << "Изменения внесены успешно!"<<endl;
 				}
 				else {
 					cout << endl << "Ошибка ввода пароля, повторите позже";
@@ -820,7 +1081,7 @@ int main()
 
 			}
 		}
-
+		
 	}
 
 
