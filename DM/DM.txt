@@ -1,20 +1,20 @@
 //Дан произвольный неориентированный граф. Проверить, будет ли он деревом
 #define VERTEXES 20
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 int color[VERTEXES];
 
-
 void dfs(int vert,int a[VERTEXES][VERTEXES],int n,bool & b)
 {
 	color[vert] = 1;
-	cout << vert+1<<" ";
+	
 	for(int i =0;i<n;i++)
 	{
 		//Обнаружение цикла
 		//Условие i>vert справедливо из-за выбранной нумерации и проверки вершин в порядке возрастания
-		if (a[vert][i] == 1 && vert != i && color[i] == 1&& i>vert) {
+		if ((a[vert][i] == 1  && color[i] == 1 && i>vert)||(a[i][i]==1)) {
 			b = true;
 		}
 		if(a[vert][i]==1&&color[i]==0)
@@ -25,22 +25,13 @@ void dfs(int vert,int a[VERTEXES][VERTEXES],int n,bool & b)
 
 }
 
-void print(int a[VERTEXES][VERTEXES],int n)
-{
-	for(int i =0;i<n;i++)
-	{
-		for(int j=0;j<n;j++)
-		{
-			cout << a[i][j];
-		}
-		cout << endl;
-	}
-}
-
 int main()
 {	
 	setlocale(LC_ALL, "RU");
-
+	ifstream fin;
+	ofstream fout;
+	fin.open("Input.txt");
+	fout.open("Output.txt");
 	//Объявление переменных
 	int n; int x = -1; int a[VERTEXES][VERTEXES]; bool tree = false;
 
@@ -59,25 +50,22 @@ int main()
 		color[i] = 0;
 
 
-	cout << "Введите кол-во вершин: ";
-	cin >> n;
+	//cout << "Введите кол-во вершин: ";
+	fin >> n;
 
 	//Ввод графа и заполнение матрицы смежности
 	for(int i=1;i<=n;i++)
 	{
-		cout << "Введите вершины, смежные с вершиной " << i<<" : ";
-		cin >> x;
+		//cout << "Введите вершины, смежные с вершиной " << i<<" : ";
+		fin >> x;
 		while(x!=0)
 		{
 			a[i-1][x-1] = 1;
 			a[x - 1][i - 1] = 1;
-			cin >> x;
+			fin >> x;
 		}
 	}
-
-	
 	dfs(0,a, n,tree);
-
 	bool svyaz = true;
 
 	for(int i=0;i<n;i++)
@@ -85,14 +73,12 @@ int main()
 		if (color[i] == 0)svyaz = false;
 	}
 
-	cout << endl << "Дерево ли? " << endl;
-	if (tree == 1) {
+	fout << endl << "Дерево ли? " << endl;
+	if (!tree) {
 		if(svyaz)
-		cout << "Заданный граф - дерево";
+		fout << "Заданный граф - дерево";
 	}
-	else cout << "Заданный граф не является деревом";
-	cout << endl;
-	//print(a, n);
-	system("pause");
+	else fout << "Заданный граф не является деревом";
+	fout << endl;
 }
 
